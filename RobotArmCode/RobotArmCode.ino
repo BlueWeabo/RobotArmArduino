@@ -3,8 +3,12 @@
 #define STEPS 32
 #define CLK 2
 #define DT 3
+#define IN1 4
+#define IN2 5
+#define IN3 6
+#define IN4 7
 
-Stepper stepper(STEPS, 4, 5, 6, 7);
+Stepper stepper(STEPS, IN1, IN3, IN2, IN4);
 
 int previous = 0;
 int counter = 0;
