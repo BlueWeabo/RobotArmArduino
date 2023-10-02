@@ -57,7 +57,7 @@ void loop() {
 		}
 
 		// Serial.print("Direction: ");
-		// Serial.print(currentDir);
+		// Serial.print(currentDir); adminzala113pge
 		// Serial.print(" | Counter: ");
 		// Serial.println(counter);
 	}
