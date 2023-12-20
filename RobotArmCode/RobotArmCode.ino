@@ -1,6 +1,18 @@
-#include <Stepper.h>
+#include <nRF24L01.h>
+#include <printf.h>
+#include <RF24.h>
+#include <RF24_config.h>
 
-#define STEPS 32
+#include <Stepper.h>
+#include <Servo.h>
+
+#define MOTOR_STEPS 32
+const int MOTOR_BASE[] = {1,2,3,4};
+const int MOTOR_SWIVEL[] = {1,2,3,4};
+const int MOTOR_JOINT_ONE[] = {1,2,3,4};
+const int MOTOR_JOINT_TWO[] = {1,2,3,4};
+const int MOTOR_HAND[] = {1,2,3,4};
+#define SERVO_GRABBER 1
 #define CLK 2
 #define DT 3
 #define IN1 4
@@ -8,7 +20,12 @@
 #define IN3 6
 #define IN4 7
 
-Stepper stepper(STEPS, IN1, IN3, IN2, IN4);
+Stepper baseMotor(MOTOR_STEPS, MOTOR_BASE[0], MOTOR_BASE[2], MOTOR_BASE[1], MOTOR_BASE[3]);
+Stepper swivelMotor(MOTOR_STEPS, MOTOR_SWIVEL[0], MOTOR_SWIVEL[2], MOTOR_SWIVEL[1], MOTOR_SWIVEL[3]);
+Stepper jointOneMotor(MOTOR_STEPS, MOTOR_JOINT_ONE[0], MOTOR_JOINT_ONE[2], MOTOR_JOINT_ONE[1], MOTOR_JOINT_ONE[3]);
+Stepper jointTwoMotor(MOTOR_STEPS, MOTOR_JOINT_TWO[0], MOTOR_JOINT_TWO[2], MOTOR_JOINT_TWO[1], MOTOR_JOINT_TWO[3]);
+Stepper handMotor(MOTOR_STEPS, MOTOR_HAND[0], MOTOR_HAND[2], MOTOR_HAND[1], MOTOR_HAND[3]);
+Servo grabberServo(SERVO_GRABBER);
 
 int previous = 0;
 int counter = 0;
@@ -18,7 +35,7 @@ String currentDir ="";
 unsigned long lastButtonPress = 0;
 
 void setup() {
-  stepper.setSpeed(255);
+  baseMotor.setSpeed(255);
 	// Set encoder pins as inputs
 	pinMode(CLK,INPUT);
 	pinMode(DT,INPUT);
@@ -34,7 +51,7 @@ void setup() {
 }
 
 void loop() {
-  // stepper.step(STEPS);
+  // baseMotor.step(STEPS);
   // return;
   // Read the current state of CLK
 	currentStateCLK = digitalRead(CLK);
@@ -46,12 +63,12 @@ void loop() {
 		// If the DT state is different than the CLK state then
 		// the encoder is rotating CCW so decrement
 		if (digitalRead(DT) != currentStateCLK) {
-			stepper.step(STEPS);
+			baseMotor.step(MOTOR_STEPS);
       counter--;
 			currentDir ="CCW";
 		} else {
 			// Encoder is rotating CW so increment
-			stepper.step(-STEPS);
+			baseMotor.step(-MOTOR_STEPS);
       counter++;
 			currentDir ="CW";
 		}
@@ -65,7 +82,7 @@ void loop() {
 	// Remember last CLK state
 	lastStateCLK = currentStateCLK;
 
-  // stepper.step(-100);
+  // baseMotor.step(-100);
 
   delay(1);
 }
