@@ -83,7 +83,7 @@ void loop() {
       break;
     }
     case MOVE_BASE_CCW: {
-      Serial.println("Moving Base CW");
+      Serial.println("Moving Base CCW");
       break;
     }
   }
