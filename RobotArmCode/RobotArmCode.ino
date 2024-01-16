@@ -38,7 +38,7 @@ enum Commands {
 };
 
 // Set address for NRF24 module
-const byte ADDRESS[5] = "00001";
+const byte ADDRESS[6] = "00001";
 
 // Set up NRF24 Module object
 RF24 radio(CE, CSN);
@@ -54,7 +54,7 @@ Servo grabber;
 void setup() {
   Serial.begin(9600);
   baseMotor.setSpeed(255);
-  swivelMotor.setSpeed(25);
+  swivelMotor.setSpeed(255);
   jointOneMotor.setSpeed(255);
   jointTwoMotor.setSpeed(255);
   handMotor.setSpeed(255);
@@ -77,13 +77,64 @@ void loop() {
 	char buffer[32];
   radio.read(&buffer, sizeof(buffer));
   int command = buffer[0] * 256 + buffer[1];
+  int arg = buffer[2];
   switch (command) {
     case MOVE_BASE_CW: {
       Serial.println("Moving Base CW");
+      baseMotor.step(MOTOR_STEPS);
       break;
     }
     case MOVE_BASE_CCW: {
       Serial.println("Moving Base CCW");
+      baseMotor.step(-MOTOR_STEPS);
+      break;
+    }
+    case MOVE_SWIVEL_CW: {
+      swivelMotor.step(MOTOR_STEPS);
+      break;
+    }
+    case MOVE_SWIVEL_CCW: {
+      swivelMotor.step(-MOTOR_STEPS);
+      break;
+    }
+    case MOVE_JOINT_ONE_CW: {
+      jointOneMotor.step(MOTOR_STEPS);
+      break;
+    }
+    case MOVE_JOINT_ONE_CCW: {
+      jointOneMotor.step(-MOTOR_STEPS);
+      break;
+    }
+    case MOVE_JOINT_TWO_CW: {
+      jointTwoMotor.step(MOTOR_STEPS);
+      break;
+    }
+    case MOVE_JOINT_TWO_CCW: {
+      jointTwoMotor.step(-MOTOR_STEPS);
+      break;
+    }
+    case MOVE_HAND_CW: {
+      handMotor.step(MOTOR_STEPS);
+      break;
+    }
+    case MOVE_HAND_CCW: {
+      handMotor.step(-MOTOR_STEPS);
+      break;
+    }
+    case OPEN_HAND: {
+      grabber.write(0);
+      break;
+    }
+    case CLOSE_HAND: {
+      grabber.write(180);
+      break;
+    }
+    case CHANGE_SPEED: {
+      baseMotor.setSpeed(arg);
+      swivelMotor.setSpeed(arg);
+      jointOneMotor.setSpeed(arg);
+      jointTwoMotor.setSpeed(arg);
+      handMotor.setSpeed(arg);
       break;
     }
   }
