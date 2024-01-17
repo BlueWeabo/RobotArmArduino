@@ -74,7 +74,7 @@ void loop() {
   if (!radio.available()) {
     return;
   }
-	char buffer[32];
+  char buffer[32];
   radio.read(&buffer, sizeof(buffer));
   int command = buffer[0] * 256 + buffer[1];
   switch (command) {
