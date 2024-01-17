@@ -35,7 +35,7 @@ enum Commands {
 };
 
 // Set address for NRF24 module
-const byte ADDRESS[5] = "00001";
+const byte ADDRESS[6] = "00001";
 
 // Set up NRF24 Module object
 RF24 radio(CE, CSN);
@@ -45,12 +45,12 @@ int jointOneOrTwo = 0; // Move joint one by default
 int openedOrClosed = 0; // Hand Opened by default
 
 // Variables storing last state and current state of CLK
-int *currentStateBaseSwivelCLK;
-int *lastStateBaseSwivelCLK;
-int *currentStateJointsCLK;
-int *lastStateJointsCLK;
-int *currentStateHandCLK;
-int *lastStateHandCLK;
+int *currentStateBaseSwivelCLK = 0;
+int *lastStateBaseSwivelCLK = 0;
+int *currentStateJointsCLK = 0;
+int *lastStateJointsCLK = 0;
+int *currentStateHandCLK = 0;
+int *lastStateHandCLK = 0;
 
 // Store last speed we set
 int currentSpeed = 0;
@@ -68,9 +68,9 @@ void setup() {
   pinMode(MOTOR_HAND_SW, INPUT);
 
   // Read the initial state of CLK
-  lastStateBaseSwivelCLK = digitalRead(MOTOR_BASE_SWIVEL_CLK);
-  lastStateJointsCLK = digitalRead(MOTOR_BASE_SWIVEL_CLK);
-  lastStateHandCLK = digitalRead(MOTOR_BASE_SWIVEL_CLK);
+  *lastStateBaseSwivelCLK = digitalRead(MOTOR_BASE_SWIVEL_CLK);
+  *lastStateJointsCLK = digitalRead(MOTOR_BASE_SWIVEL_CLK);
+  *lastStateHandCLK = digitalRead(MOTOR_BASE_SWIVEL_CLK);
 
   // Read initial speed value
   currentSpeed = map(0, 1023, 0, 255, analogRead(MOTOR_SPEED));
@@ -91,7 +91,7 @@ void setup() {
   // Disable listening to make sure we arne't getting any signals from elsewhere to our transmitter
   radio.stopListening();
   // Send the speed we have currently 
-  byte buf[3] = {highByte(CHANGE_SPEED), lowByte(CHANGE_SPEED), currentSpeed};
+  byte buf[3] = {highByte(CHANGE_SPEED), lowByte(CHANGE_SPEED), lowByte(currentSpeed)};
   radio.write(&buf, sizeof(buf));
 }
 
@@ -178,19 +178,19 @@ void loop() {
   }
   
   // Remember last CLK state
-  lastStateBaseSwivelCLK = *currentStateBaseSwivelCLK;
-  lastStateJointsCLK = *currentStateJointsCLK;
-  lastStateHandCLK = *currentStateHandCLK;
+  *lastStateBaseSwivelCLK = *currentStateBaseSwivelCLK;
+  *lastStateJointsCLK = *currentStateJointsCLK;
+  *lastStateHandCLK = *currentStateHandCLK;
   delay(1);
 }
 
 // Function to check the pins and give back the direction
 // Returns: -1 when rotated CCW, 0 when it wasn't rotated, 1 when rotated CW
 int determineRotationDirection(int clkPin, int dtPin, int *lastState, int *currentState) {
-  currentState = digitalRead(clkPin);
-  if (currentState != lastState  && currentState){
+  *currentState = digitalRead(clkPin);
+  if (*currentState != *lastState  && *currentState){
     // Check whether we are rotating clockwise (CW) or counter-clockwise (CCW)
-    if (digitalRead(MOTOR_BASE_SWIVEL_DT) != currentState) {
+    if (digitalRead(MOTOR_BASE_SWIVEL_DT) != *currentState) {
       // if DT pin activated first then we are rotating CCW
       return -1;
     } else {
