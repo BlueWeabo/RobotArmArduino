@@ -13,13 +13,12 @@
 const int MOTOR_BASE[] = {22,23,24,25};
 const int MOTOR_SWIVEL[] = {26,27,28,29};
 const int MOTOR_JOINT_ONE[] = {30,31,32,33};
-const int MOTOR_JOINT_TWO[] = {34,35,36,36};
-const int MOTOR_HAND[] = {37,38,39,40};
+const int MOTOR_JOINT_TWO[] = {34,35,36,37};
+const int MOTOR_HAND[] = {38,39,40,41};
 #define SERVO_GRABBER 2
 #define CE 7
 #define CSN 8
 
-// Define commands
 // Define commands
 enum Commands {
   MOVE_BASE_CW = 1 << 0,
@@ -122,11 +121,17 @@ void loop() {
       break;
     }
     case OPEN_HAND: {
-      grabber.write(0);
+      grabber.write(180);
+      delay(100);
+      grabber.write(90);
+      Serial.println("opening hand");
       break;
     }
     case CLOSE_HAND: {
-      grabber.write(180);
+      grabber.write(0);
+      delay(100);
+      grabber.write(90);
+      Serial.println("closing hand");
       break;
     }
     case CHANGE_SPEED: {
@@ -135,6 +140,8 @@ void loop() {
       jointOneMotor.setSpeed(arg);
       jointTwoMotor.setSpeed(arg);
       handMotor.setSpeed(arg);
+      Serial.print("New speed:");
+      Serial.println(arg);
       break;
     }
   }
